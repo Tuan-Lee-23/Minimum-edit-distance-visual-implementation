@@ -52,12 +52,28 @@ def animate_heat_map(str1, str2):
         update_heatmap(dp, str1, str2)
 
     def animate(i):
-        plt.clf()
-        result, states = editDistDP(str1, str2)
+        # plt.clf()
+        # result, states = editDistDP(str1, str2)
         
         plt.clf()
-        lables = np.array([['a', 'b', 'c' ,'d'], ['d', 'c', 'b', 'a']])
-        data = np.empty((2, 4))
+        str1_temp = ''
+        str2_temp = ''
+
+        if len(str2) > len(str1):
+            str1_temp = str1.ljust(len(str2))
+            str2_temp = str2
+        elif len(str1) > len(str2):
+            str2_temp = str2.ljust(len(str1))
+            str1_temp = str1
+        
+        ls_str1 = np.array(list(str1_temp))
+        ls_str2 = np.array(list(str2_temp))
+
+        lables = np.array([ls_str1, ls_str2])
+
+        data = np.zeros((2, len(ls_str2)))
+        data[1, :] = 10
+
         sns.heatmap(data, annot = lables, cbar = False, fmt = '')
 
         plt.pause(5)
@@ -169,7 +185,7 @@ def editDistDP(str1, str2):
                 highlight(ax, m, n)
                 states = trace_back(data, m, n)
 
-                plt.pause(100)
+                plt.pause(5)
                  
             # plt.pause(0.00001) 
             # plt.clf()  
