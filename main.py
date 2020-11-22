@@ -32,8 +32,12 @@ def update_heatmap(data, str1, str2):
     plt.tick_params(axis = "both", which = "both", left = False, top = False)
 
     
-def highlight(ax, y, x):
-    ax.add_patch(Rectangle((x, y), 1, 1, fill=True, edgecolor='cyan', lw=3))
+def highlight(ax, y, x, color = 'cyan'):
+    if color == 'cyan':
+        edgec = 'cyan'
+    elif color == 'red':
+        edgec = 'lime'
+    ax.add_patch(Rectangle((x, y), 1, 1, edgecolor= edgec, lw= 2))
 
 def animate_heat_map(str1, str2):
     global ax
@@ -47,14 +51,15 @@ def animate_heat_map(str1, str2):
         plt.clf()
         update_heatmap(dp, str1, str2)
 
-    def animate():
+    def animate(i):
         plt.clf()
         editDistDP(str1, str2)
 
 
-    anim = animation.FuncAnimation(fig, animate, init_func = init, interval = 1)
+    anim = animation.FuncAnimation(fig, animate, init_func = init, interval = 0)
 
     plt.tight_layout()
+    plt.show()
 
 def trace_back(data, m, n):
     global ax
@@ -78,12 +83,18 @@ def trace_back(data, m, n):
             highlight(ax, m - 1, n)
             m -= 1
 
-        plt.pause(0.1)
+        plt.pause(0.3)
+
+        # move down: delete
+        # move right: insert
+        # move diag: +1 --> replace
+        # move diag: +0 --> nothing
     return
 
  
 def editDistDP(str1, str2):
     m, n = len(str1), len(str2)
+    global ax
 
     # Create a table to store results of subproblems
     data = np.array([[0 for x in range(n + 1)] for x in range(m + 1)])
@@ -92,7 +103,6 @@ def editDistDP(str1, str2):
     # Fill d[][] in bottom up manner
     for i in range(m + 1):
         for j in range(n + 1):
-
             # If first string is empty, only option is to
             # insert all characters of second string
             if i == 0:
@@ -114,15 +124,30 @@ def editDistDP(str1, str2):
                 data[i][j] = 1 + min(data[i][j-1],        # Insert
                                    data[i-1][j],        # Remove
                                    data[i-1][j-1])    # Replace
-            
-            if j % 5 == 0:
-                update_heatmap(data, str1, str2)
+                high = np.argmin(np.array([data[i][j - 1], data[i - 1][j], data[i - 1][j - 1]]))
+ 
+                if high == 0:
+                    update_heatmap(data, str1, str2)
+                    highlight(ax, i, j - 1)
+                    highlight(ax, i, j, 'red')
+                elif high == 1:
+                    update_heatmap(data, str1, str2)
+                    highlight(ax, i - 1, j)
+                    highlight(ax, i, j, 'red')
+                else:
+                    update_heatmap(data, str1, str2)
+                    highlight(ax, i - 1, j - 1)
+                    highlight(ax, i, j, 'red')
                 plt.pause(0.1)
-                plt.clf()
+            
+            # if j % 5 == 0:
+            update_heatmap(data, str1, str2)
+            plt.pause(0.0005)
+            plt.clf()
 
             if i == m and j == n:
                 update_heatmap(data, str1, str2)
-                global ax
+                # global ax
                 highlight(ax, m, n)
                 trace_back(data, m, n)
 
@@ -134,9 +159,9 @@ def editDistDP(str1, str2):
 
 
 if __name__ == "__main__":
-    str1 = "optional"
-    str2 = "eptoinally"
+    str1 = "optioonal"
+    str2 = "optional"
 
     animate_heat_map(str1, str2)
-    editDistDP(str1, str2)
+    # editDistDP(str1, str2)
     
