@@ -6,10 +6,32 @@ from matplotlib.patches import Rectangle
 
 global ax
 
-def update_heatmap(data):
+def update_heatmap(data, str1, str2):
     global ax
+    sns.set(font_scale = 1.4)
     ax = sns.heatmap(data, annot = True, cbar = False)
 
+    tick_x = list(str2)
+    tick_y = list(str1)
+
+    tick_x.insert(0, '')
+    tick_y.insert(0, '')
+
+    # decrease xticks top padding
+    # ax.tick_params(axis = 'x', which = 'major', pad = -80)
+
+    # Move xticks to top
+    ax.xaxis.set_ticks_position('top')
+
+    plt.xticks(range(len(tick_x)), tick_x, rotation = 0)
+    plt.yticks(range(len(tick_y)), tick_y, rotation = 0)
+
+    plt.xticks(plt.xticks()[0] + 0.5)
+    plt.yticks(plt.yticks()[0] + 0.5)
+
+    plt.tick_params(axis = "both", which = "both", left = False, top = False)
+
+    
 def highlight(ax, y, x):
     ax.add_patch(Rectangle((x, y), 1, 1, fill=True, edgecolor='cyan', lw=3))
 
@@ -19,11 +41,11 @@ def animate_heat_map(str1, str2):
 
     m, n = len(str1), len(str2)
     dp = np.array([[0 for x in range(n + 1)] for x in range(m + 1)])
-    update_heatmap(dp)
+    update_heatmap(dp, str1, str2)
 
     def init():
         plt.clf()
-        update_heatmap(dp)
+        update_heatmap(dp, str1, str2)
 
     def animate():
         plt.clf()
@@ -94,12 +116,12 @@ def editDistDP(str1, str2):
                                    data[i-1][j-1])    # Replace
             
             if j % 5 == 0:
-                update_heatmap(data)
+                update_heatmap(data, str1, str2)
                 plt.pause(0.1)
                 plt.clf()
 
             if i == m and j == n:
-                update_heatmap(data)
+                update_heatmap(data, str1, str2)
                 global ax
                 highlight(ax, m, n)
                 trace_back(data, m, n)
@@ -108,9 +130,6 @@ def editDistDP(str1, str2):
                  
             # plt.pause(0.00001) 
             # plt.clf()  
-
-
-
     return data[m][n]
 
 
