@@ -107,8 +107,8 @@ def animate_heat_map(str1, str2):
             plt.clf()
             ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
 
-        plt.pause(10)
-
+        plt.pause(7)
+        plt.close('all')
 
 
     anim = animation.FuncAnimation(fig, animate, init_func = init, interval = 0)
@@ -161,43 +161,48 @@ def editDistDP(str1, str2):
     m, n = len(str1), len(str2)
     global ax
 
+    # Create a table to store results of subproblems
     data = np.array([[0 for x in range(n + 1)] for x in range(m + 1)])
     
  
+    # Fill d[][] in bottom up manner
     for i in range(m + 1):
         for j in range(n + 1):
-            # If first string is empty
+            # If first string is empty, only option is to
             # insert all characters of second string
             if i == 0:
-                data[i][j] = j    
+                data[i][j] = j    # Min. operations = j
  
-            # If second string is empty
+            # If second string is empty, only option is to
             # remove all characters of second string
             elif j == 0:
-                data[i][j] = i    
+                data[i][j] = i    # Min. operations = i
  
             # If last characters are same, ignore last char
+            # and recur for remaining string
             elif str1[i-1] == str2[j-1]:
                 data[i][j] = data[i-1][j-1]
  
-            # If last character are different
-            # find Min
+            # If last character are different, consider all
+            # possibilities and find minimum
             else:
                 data[i][j] = 1 + min(data[i][j-1],        # Insert
                                    data[i-1][j],        # Remove
                                    data[i-1][j-1])    # Replace
                 high = np.argmin(np.array([data[i][j - 1], data[i - 1][j], data[i - 1][j - 1]]))
-                update_heatmap(data, str1, str2)
 
+                update_heatmap(data, str1, str2)
                 if high == 0:
+
                     highlight(ax, i, j - 1)
+                    highlight(ax, i, j, 'red')
                 elif high == 1:
                     highlight(ax, i - 1, j)
+                    highlight(ax, i, j, 'red')
                 else:
                     highlight(ax, i - 1, j - 1)
-
-                highlight(ax, i, j, 'red')
-                plt.pause(0.08)
+                    highlight(ax, i, j, 'red')
+                plt.pause(0.1)
             
             # if j % 5 == 0:
             update_heatmap(data, str1, str2)
