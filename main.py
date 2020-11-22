@@ -94,13 +94,10 @@ def animate_heat_map(str1, str2):
 
                 plt.clf()
                 if state == 1:
-                    # plt.clf()
                     labels[0, i] += ' (replace)'
                 elif state == 2:
-                    # plt.clf()
                     labels[0, i] += ' (insert)'
                 elif state == 3:
-                    # plt.clf()
                     labels[0, i] += ' (delete)'
 
         
@@ -110,8 +107,8 @@ def animate_heat_map(str1, str2):
             plt.clf()
             ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
 
-        plt.pause(10)
-
+        plt.pause(7)
+        plt.close('all')
 
 
     anim = animation.FuncAnimation(fig, animate, init_func = init, interval = 0)
@@ -193,17 +190,16 @@ def editDistDP(str1, str2):
                                    data[i-1][j],        # Remove
                                    data[i-1][j-1])    # Replace
                 high = np.argmin(np.array([data[i][j - 1], data[i - 1][j], data[i - 1][j - 1]]))
- 
+
+                update_heatmap(data, str1, str2)
                 if high == 0:
-                    update_heatmap(data, str1, str2)
+
                     highlight(ax, i, j - 1)
                     highlight(ax, i, j, 'red')
                 elif high == 1:
-                    update_heatmap(data, str1, str2)
                     highlight(ax, i - 1, j)
                     highlight(ax, i, j, 'red')
                 else:
-                    update_heatmap(data, str1, str2)
                     highlight(ax, i - 1, j - 1)
                     highlight(ax, i, j, 'red')
                 plt.pause(0.1)
