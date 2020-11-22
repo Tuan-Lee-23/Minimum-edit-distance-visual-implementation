@@ -33,10 +33,13 @@ def update_heatmap(data, str1, str2):
 
     
 def highlight(ax, y, x, color = 'cyan'):
+    edgec = ''
     if color == 'cyan':
         edgec = 'cyan'
     elif color == 'red':
         edgec = 'lime'
+    elif color == 'lime':
+        edgec = 'red'
     ax.add_patch(Rectangle((x, y), 1, 1, edgecolor= edgec, lw= 2))
 
 def animate_heat_map(str1, str2):
@@ -53,11 +56,12 @@ def animate_heat_map(str1, str2):
 
     def animate(i):
         # plt.clf()
-        # result, states = editDistDP(str1, str2)
-        
+        result, states = editDistDP(str1, str2)
+        # states = [0, 0, 0, 0, 1, 3, 2, 1, 1]
+
         plt.clf()
-        str1_temp = ''
-        str2_temp = ''
+        str1_temp = ""
+        str2_temp = ""
 
         if len(str2) > len(str1):
             str1_temp = str1.ljust(len(str2))
@@ -66,17 +70,48 @@ def animate_heat_map(str1, str2):
             str2_temp = str2.ljust(len(str1))
             str1_temp = str1
         
-        ls_str1 = np.array(list(str1_temp))
-        ls_str2 = np.array(list(str2_temp))
+        ls_str1 = np.array(list(str1_temp), dtype = np.dtype('U10'))
+        ls_str2 = np.array(list(str2_temp), dtype = np.dtype('U10'))
 
-        lables = np.array([ls_str1, ls_str2])
+        
+        labels = np.array([ls_str1, ls_str2])
 
-        data = np.zeros((2, len(ls_str2)))
+        data = np.ones((2, len(ls_str2)))
         data[1, :] = 10
 
-        sns.heatmap(data, annot = lables, cbar = False, fmt = '')
+        ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
+        # plt.pause(5)
+        plt.pause(0.1)
 
-        plt.pause(5)
+        # test
+        for i, state in enumerate(states):
+            if state == 0:
+                highlight(ax2, 0, i)
+            else:
+                highlight(ax2, 0, i, 'red')
+                ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
+                plt.pause(0.3)
+
+                plt.clf()
+                if state == 1:
+                    # plt.clf()
+                    labels[0, i] += ' (replace)'
+                elif state == 2:
+                    # plt.clf()
+                    labels[0, i] += ' (insert)'
+                elif state == 3:
+                    # plt.clf()
+                    labels[0, i] += ' (delete)'
+
+        
+            ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
+            
+            plt.pause(0.5)
+            plt.clf()
+            ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
+
+        plt.pause(10)
+
 
 
     anim = animation.FuncAnimation(fig, animate, init_func = init, interval = 0)
@@ -122,7 +157,6 @@ def trace_back(data, m, n):
         # move diag: +0 --> nothing (0)
 
     states = states[::-1]
-    print(states)
     return states
 
  
@@ -182,13 +216,11 @@ def editDistDP(str1, str2):
             if i == m and j == n:
                 update_heatmap(data, str1, str2)
                 # global ax
-                highlight(ax, m, n)
+                highlight(ax, m, n, 'lime')
                 states = trace_back(data, m, n)
 
                 plt.pause(5)
                  
-            # plt.pause(0.00001) 
-            # plt.clf()  
     return [data[m][n], states]
 
 
@@ -197,5 +229,4 @@ if __name__ == "__main__":
     str2 = "optional"
 
     animate_heat_map(str1, str2)
-    # editDistDP(str1, str2)
     
