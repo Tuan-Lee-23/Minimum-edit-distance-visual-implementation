@@ -55,6 +55,13 @@ def animate_heat_map(str1, str2):
         plt.clf()
         editDistDP(str1, str2)
 
+        plt.clf()
+        lables = np.array([['a', 'b', 'c' ,'d'], ['d', 'c', 'b', 'a']])
+        data = np.empty((2, 4))
+        sns.heatmap(data, annot = lables, cbar = False, fmt = '')
+
+        plt.pause(5)
+
 
     anim = animation.FuncAnimation(fig, animate, init_func = init, interval = 0)
 
@@ -151,7 +158,7 @@ def editDistDP(str1, str2):
                 highlight(ax, m, n)
                 trace_back(data, m, n)
 
-                plt.pause(50)
+                plt.pause(2)
                  
             # plt.pause(0.00001) 
             # plt.clf()  
