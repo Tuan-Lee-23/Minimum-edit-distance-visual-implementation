@@ -53,8 +53,8 @@ def animate_heat_map(str1, str2):
 
     def animate(i):
         plt.clf()
-        editDistDP(str1, str2)
-
+        result, states = editDistDP(str1, str2)
+        
         plt.clf()
         lables = np.array([['a', 'b', 'c' ,'d'], ['d', 'c', 'b', 'a']])
         data = np.empty((2, 4))
@@ -70,6 +70,7 @@ def animate_heat_map(str1, str2):
 
 def trace_back(data, m, n):
     global ax
+    states = []
 
     while (m != 0 or n != 0):
         left = data[m][n - 1]
@@ -78,25 +79,35 @@ def trace_back(data, m, n):
 
         min_square = min(left, top, left_top)
         if left_top == min_square:
+            if left_top == data[m, n]:
+                states.append(0)
+            elif left_top == data[m, n] - 1:
+                states.append(1)
+
             highlight(ax, m - 1, n - 1)
             m -= 1
             n -= 1
-        
+
         elif left == min_square:
+            states.append(2)
             highlight(ax, m, n - 1)
             n -= 1
         
         else:
+            states.append(3)
             highlight(ax, m - 1, n)
             m -= 1
 
         plt.pause(0.3)
 
-        # move down: delete
-        # move right: insert
-        # move diag: +1 --> replace
-        # move diag: +0 --> nothing
-    return
+        # move down: delete (3)
+        # move right: insert (2)
+        # move diag: +1 --> replace (1)
+        # move diag: +0 --> nothing (0)
+
+    states = states[::-1]
+    print(states)
+    return states
 
  
 def editDistDP(str1, str2):
@@ -156,13 +167,13 @@ def editDistDP(str1, str2):
                 update_heatmap(data, str1, str2)
                 # global ax
                 highlight(ax, m, n)
-                trace_back(data, m, n)
+                states = trace_back(data, m, n)
 
-                plt.pause(2)
+                plt.pause(100)
                  
             # plt.pause(0.00001) 
             # plt.clf()  
-    return data[m][n]
+    return [data[m][n], states]
 
 
 if __name__ == "__main__":
