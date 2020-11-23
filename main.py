@@ -57,6 +57,7 @@ def animate_heat_map(str1, str2):
     def animate(i):
         # plt.clf()
         result, states = editDistDP(str1, str2)
+        print(states)
         # states = [0, 0, 0, 0, 1, 3, 2, 1, 1]
 
         plt.clf()
@@ -95,11 +96,25 @@ def animate_heat_map(str1, str2):
                 plt.clf()
                 if state == 1:
                     labels[0, i] += ' (replace)'
+                    ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
+                    plt.pause(1.4)
+                    plt.clf()
+                    labels[0, i] = labels[1, i]
                 elif state == 2:
                     labels[0, i] += ' (insert)'
+                    ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
+                    plt.pause(1.4)
+                    plt.clf()
+                    
+                    labels[0, i] = labels[1, i]
+
                 elif state == 3:
                     labels[0, i] += ' (delete)'
-
+                    ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
+                    plt.pause(1.4)
+                    plt.clf()
+                    labels[0, i] = ' '
+                
         
             ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
             
@@ -107,7 +122,7 @@ def animate_heat_map(str1, str2):
             plt.clf()
             ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
 
-        plt.pause(14)
+        plt.pause(18)
         plt.close('all')
 
 
@@ -126,7 +141,13 @@ def trace_back(data, m, n):
         left_top = data[m - 1][n - 1]
 
         min_square = min(left, top, left_top)
-        if left_top == min_square:
+
+        if left == min_square:
+            states.append(2)
+            highlight(ax, m, n - 1)
+            n -= 1
+            
+        elif left_top == min_square:
             if left_top == data[m, n]:
                 states.append(0)
             elif left_top == data[m, n] - 1:
@@ -134,11 +155,6 @@ def trace_back(data, m, n):
 
             highlight(ax, m - 1, n - 1)
             m -= 1
-            n -= 1
-
-        elif left == min_square:
-            states.append(2)
-            highlight(ax, m, n - 1)
             n -= 1
         
         else:
@@ -206,7 +222,7 @@ def editDistDP(str1, str2):
             
             # if j % 5 == 0:
             update_heatmap(data, str1, str2)
-            plt.pause(0.0005)
+            plt.pause(0.000000001)
             plt.clf()
 
             if i == m and j == n:
