@@ -40,7 +40,7 @@ def highlight(ax, y, x, color = 'cyan'):
         edgec = 'lime'
     elif color == 'lime':
         edgec = 'red'
-    ax.add_patch(Rectangle((x, y), 1, 1, edgecolor= edgec, lw= 2))
+    ax.add_patch(Rectangle((x, y), 1, 1, edgecolor= edgec, lw= 4))
 
 def animate_heat_map(str1, str2):
     global ax
@@ -70,8 +70,8 @@ def animate_heat_map(str1, str2):
             str2_temp = str2.ljust(len(str1))
             str1_temp = str1
         
-        ls_str1 = np.array(list(str1_temp), dtype = np.dtype('U10'))
-        ls_str2 = np.array(list(str2_temp), dtype = np.dtype('U10'))
+        ls_str1 = np.array(list(str1_temp), dtype = np.dtype('U20'))
+        ls_str2 = np.array(list(str2_temp), dtype = np.dtype('U20'))
 
         
         labels = np.array([ls_str1, ls_str2])
@@ -107,7 +107,7 @@ def animate_heat_map(str1, str2):
             plt.clf()
             ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
 
-        plt.pause(7)
+        plt.pause(14)
         plt.close('all')
 
 
@@ -221,8 +221,9 @@ def editDistDP(str1, str2):
 
 
 if __name__ == "__main__":
-    str1 = "optioonal"
-    str2 = "optional"
+
+    str1 = input('input 1st string: ')
+    str2 = input('input 2nd string: ')
+    print("The minimum distance is at bottom right corner square")
 
     animate_heat_map(str1, str2)
-    
