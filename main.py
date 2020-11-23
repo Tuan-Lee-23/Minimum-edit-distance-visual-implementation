@@ -124,7 +124,7 @@ def animate_heat_map(str1, str2):
             plt.clf()
             ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
 
-        plt.pause(18)
+        plt.pause(15)
         plt.close('all')
 
 
