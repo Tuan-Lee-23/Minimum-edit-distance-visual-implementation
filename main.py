@@ -55,10 +55,10 @@ def animate_heat_map(str1, str2):
         update_heatmap(dp, str1, str2)
 
     def animate(i):
-        # plt.clf()
+        plt.clf()
         result, states = editDistDP(str1, str2)
-        print(states)
-        # states = [0, 0, 0, 0, 1, 3, 2, 1, 1]
+
+        # states = [1, 2, 1, 2, 2, 2, 2, 0, 0, 0, 0, 2, 2]
 
         plt.clf()
         str1_temp = ""
@@ -76,7 +76,7 @@ def animate_heat_map(str1, str2):
 
         
         labels = np.array([ls_str1, ls_str2])
-
+        
         data = np.ones((2, len(ls_str2)))
         data[1, :] = 10
 
@@ -101,12 +101,14 @@ def animate_heat_map(str1, str2):
                     plt.clf()
                     labels[0, i] = labels[1, i]
                 elif state == 2:
+                    new_str1 = labels[0, :-1].copy()
                     labels[0, i] += ' (insert)'
                     ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
                     plt.pause(1.4)
                     plt.clf()
                     
-                    labels[0, i] = labels[1, i]
+                    new_str1 = np.insert(new_str1, i, labels[1, i])
+                    labels = np.array([new_str1, ls_str2])
 
                 elif state == 3:
                     labels[0, i] += ' (delete)'
@@ -240,6 +242,7 @@ if __name__ == "__main__":
 
     str1 = input('input 1st string: ')
     str2 = input('input 2nd string: ')
-    print("The minimum distance is at bottom right corner square")
+
+    print("The minimum distance value is at bottom right corner square")
 
     animate_heat_map(str1, str2)
