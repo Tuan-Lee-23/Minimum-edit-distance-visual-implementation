@@ -9,7 +9,7 @@ global ax
 def update_heatmap(data, str1, str2):
     global ax
     sns.set(font_scale = 1.4)
-    ax = sns.heatmap(data, annot = True, cbar = False)
+    ax = sns.heatmap(data, annot = True, cbar = False, cmap = 'twilight_shifted')
 
     tick_x = list(str2)
     tick_y = list(str1)
@@ -35,12 +35,12 @@ def update_heatmap(data, str1, str2):
 def highlight(ax, y, x, color = 'cyan'):
     edgec = ''
     if color == 'cyan':
-        edgec = 'cyan'
+        edgec = '#0a100d'
     elif color == 'red':
-        edgec = 'lime'
+        edgec = '#0094c6'
     elif color == 'lime':
-        edgec = 'red'
-    ax.add_patch(Rectangle((x, y), 1, 1, edgecolor= edgec, lw= 4))
+        edgec = '#0a100d'
+    ax.add_patch(Rectangle((x, y), 1, 1, edgecolor= edgec, lw= 4, facecolor = '#89043d'))
 
 def animate_heat_map(str1, str2):
     global ax
@@ -56,7 +56,7 @@ def animate_heat_map(str1, str2):
 
     def animate(i):
         plt.clf()
-        result, states = editDistDP(str1, str2)
+        result, states = minimumEditDistance(str1, str2)
 
         # states = [1, 2, 1, 2, 2, 2, 2, 0, 0, 0, 0, 2, 2]
 
@@ -124,7 +124,7 @@ def animate_heat_map(str1, str2):
             plt.clf()
             ax2 = sns.heatmap(data, annot = labels, cbar = False, fmt = '')
 
-        plt.pause(15)
+        plt.pause(10)
         plt.close('all')
 
 
@@ -175,26 +175,24 @@ def trace_back(data, m, n):
     return states
 
  
-def editDistDP(str1, str2):
+def minimumEditDistance(str1, str2):
     m, n = len(str1), len(str2)
     global ax
 
     # Create a table to store results of subproblems
     data = np.array([[0 for x in range(n + 1)] for x in range(m + 1)])
     
- 
-    # Fill d[][] in bottom up manner
     for i in range(m + 1):
         for j in range(n + 1):
             # If first string is empty, only option is to
             # insert all characters of second string
             if i == 0:
-                data[i][j] = j    # Min. operations = j
+                data[i][j] = j    
  
             # If second string is empty, only option is to
             # remove all characters of second string
             elif j == 0:
-                data[i][j] = i    # Min. operations = i
+                data[i][j] = i 
  
             # If last characters are same, ignore last char
             # and recur for remaining string
@@ -204,9 +202,9 @@ def editDistDP(str1, str2):
             # If last character are different, consider all
             # possibilities and find minimum
             else:
-                data[i][j] = 1 + min(data[i][j-1],        # Insert
-                                   data[i-1][j],        # Remove
-                                   data[i-1][j-1])    # Replace
+                data[i][j] = 1 + min(data[i][j-1], 
+                                   data[i-1][j],    
+                                   data[i-1][j-1]) 
                 high = np.argmin(np.array([data[i][j - 1], data[i - 1][j], data[i - 1][j - 1]]))
 
                 update_heatmap(data, str1, str2)
